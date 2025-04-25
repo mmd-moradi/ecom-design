@@ -1,10 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/mmd-moradi/ecom-design/internal/decorators"
+	"github.com/mmd-moradi/ecom-design/internal/payment"
+	"github.com/mmd-moradi/ecom-design/internal/strategies"
+)
 
 func main() {
-	payment := &PaymentProccessorFactory{
-		CardInfo: &CreditCard{
+	payment := &payment.PaymentProccessorFactory{
+		CardInfo: &strategies.CreditCard{
 			CardNumber:  "1234-5678-9012-3456",
 			ExpirayDate: "12/25",
 			CVV:         "123",
@@ -15,12 +21,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	loggingDec := &LoggingDecorator{
+	loggingDec := &decorators.LoggingDecorator{
 		PS: paymentMethod,
 	}
 	loggingDec.Pay(100.0)
 
-	fraudDec := &FraudDetectionDecorator{
+	fraudDec := &decorators.FraudDetectionDecorator{
 		PS: paymentMethod,
 	}
 

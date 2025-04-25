@@ -1,24 +1,28 @@
-package main
+package payment
 
-import "fmt"
+import (
+	"fmt"
 
-type IPaymentProccessor interface {
-	NewPayment(method string) IPaymentStrategy
+	"github.com/mmd-moradi/ecom-design/internal/strategies"
+)
+
+type PaymentFactory interface {
+	NewPayment(method string) PaymentStrategy
 }
 
 type PaymentProccessorFactory struct {
-	CardInfo   *CreditCard
-	PayPalInfo *PayPal
-	CryptoInfo *Crypto
+	CardInfo   *strategies.CreditCard
+	PayPalInfo *strategies.PayPal
+	CryptoInfo *strategies.Crypto
 }
 
-func (p *PaymentProccessorFactory) NewPayment(method string) (IPaymentStrategy, error) {
+func (p *PaymentProccessorFactory) NewPayment(method string) (PaymentStrategy, error) {
 	switch method {
 	case "creditcard":
 		if p.CardInfo == nil {
 			return nil, fmt.Errorf("credit card info is not provided")
 		}
-		return &CreditCard{
+		return &strategies.CreditCard{
 			CardNumber:  p.CardInfo.CardNumber,
 			ExpirayDate: p.CardInfo.ExpirayDate,
 			CVV:         p.CardInfo.CVV,
@@ -28,7 +32,7 @@ func (p *PaymentProccessorFactory) NewPayment(method string) (IPaymentStrategy, 
 		if p.PayPalInfo == nil {
 			return nil, fmt.Errorf("PayPal info is not provided")
 		}
-		return &PayPal{
+		return &strategies.PayPal{
 			Email:    p.PayPalInfo.Email,
 			Password: p.PayPalInfo.Password,
 		}, nil
@@ -37,7 +41,7 @@ func (p *PaymentProccessorFactory) NewPayment(method string) (IPaymentStrategy, 
 			fmt.Println("Crypto info is not provided")
 			return nil, fmt.Errorf("crypto info is not provided")
 		}
-		return &Crypto{
+		return &strategies.Crypto{
 			WalletAddress: p.CryptoInfo.WalletAddress,
 			Currency:      p.CryptoInfo.Currency,
 		}, nil
